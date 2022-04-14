@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+Description: "Basic Resources required for this project"
+
+Parameters:
+  Stage:
+    Type: String
+    Default: POC
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 180
+    Environment:
+        Variables:
+          PhaseName: !Sub ${Stage}
+
+Resources:
+  #IAM Role
+  HelloWorldLambdaExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties: 
+      RoleName: !Sub HelloWorldLambdaExecutionRole_${Stage}
+      Path: "/service-role/"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - lambda.amazonaws.com 
+            Action: 
+              - sts:AssumeRole      
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        - "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+
+#HelloWorld
+  HelloWorld:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: !Sub ${Stage}-Hello-World
+      Description: !Sub ${Stage}-HelloWorld lambda function for print hello world.
+      CodeUri: HelloWorld/
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.8
+      MemorySize: 128
+      Timeout: 180
+      Role: !GetAtt HelloWorldLambdaExecutionRole.Arn      
+
+#HelloWorld-LogGroup
+  HelloWorldLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+        LogGroupName:
+            !Join 
+              - ''
+              - - '/aws/lambda/'
+                - !Ref HelloWorld
+        RetentionInDays: 14
+
+Outputs:
+  HelloWorld:
+    Value: !Ref HelloWorld
+    Description: "Hello World Lambda Function"
