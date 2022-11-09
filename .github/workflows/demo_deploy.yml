@@ -37,3 +37,12 @@ jobs:
           role-to-assume: ${{ secrets.IAMROLE_GITHUB }}
           role-session-name: GitHub-Action-Role
           aws-region: ${{ secrets.AWS_REGION }}
+
+      # Deploy to AWS CloudFormation
+      - name: Deploy to AWS CloudFormation
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: github-test-deploy
+          template: Demo-Lambda/lambda-blueprint.yaml
+          no-fail-on-empty-changeset: "1"
+          parameter-overrides: "Stage=test"
