@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
 Description: "Basic Resources required for this project"
 
+Configuration:
+  Capabilities: CAPABILITY_IAM,CAPABILITY_AUTO_EXPAND
+
 Parameters:
   Stage:
     Type: String
