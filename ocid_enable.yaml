@@ -4,7 +4,7 @@ Parameters:
     Default: heetu
   RepositoryName:
     Type: String
-    Default: heetu/github_action_aws_lambda_demo
+    Default: github_action_aws_lambda_demo
 
 Resources:
   Role:
@@ -26,7 +26,8 @@ Resources:
     Type: AWS::IAM::OIDCProvider
     Properties:
       Url: https://token.actions.githubusercontent.com
-      ClientIdList: 
+      ClientIdList:
+        - !Sub repo:${GitHubOrg}/${RepositoryName} 
         - sts.amazonaws.com
       ThumbprintList:
         - 6938fd4d98bab03faadb97b34396831e3780aea1
